@@ -5,13 +5,13 @@ import sys
 import listen
 import node
 
-### mainflags ###
+    ### mainflags ###
 ra_node = False
 ra_server = False
 ra_listen = False
 
 config = False # use config and ignore argv
-debug_o = False # show more output and use developer token
+debug = False # show more output and use developer token
 
 s_bot = False # start discord bot
 
@@ -25,15 +25,21 @@ db_name = "PSMS"
 token = ""
 dev_token = ""
 
-interval = 1
-
-
 ### start up sequence ###
 def startup():
-    if debug_o == True:
+    if debug == True:
         print('asd')
         init_msg()
     elif config == True:
+        global node_port
+        global node_ip
+        global interval
+        global db_user
+        global db_pass
+        global db_name
+        global token
+        global dev_token
+        
         node_port = NODE_PORT
         node_ip = NODE_IP
         interval = INTERVAL
@@ -60,28 +66,40 @@ def split_argv(argv, index):
 
 ### switch arguments ### FIX NOT ACCESSABLE VALUES ### idk maybe put bool on other file?! ###
 def switch(argv):
+    global node_port
+    global node_ip
+    global interval
+    global db_user
+    global db_pass
+    global db_name
+    global token
+    global dev_token
+    global config
+    global debug
+    
     if argv == "--help" or argv == "-h":
         help()
         return True # to stop the startup
     
     elif argv == "--node" or argv == "-n":
-        if ra_server == True or ra_listen == True:
+        print("NODE")
+        if ra_server == False or ra_listen == False:
             ra_node == True
         else:
             print("[ERROR] You already parsed a working mode")
     elif argv == "--server" or argv == "-s":
-        if ra_node == True or ra_listen == True:
+        if ra_node == False or ra_listen == False:
             ra_server == True
         else:
             print("[ERROR] You already parsed a working mode")
     elif argv == "--listen" or argv == "-l":
-        if ra_server == True or ra_node == True:
+        if ra_server == False or ra_node == False:
             ra_listen == True
         else:
-            print("[ERROR] You already parsed a working mode")
+            print("[ERROR] You already spezi a working mode")
         
     elif argv == "--debug" or argv == "-d":
-        debug_o = True
+        debug = True
     elif argv == "--config" or argv == "-c":
         config = True
         
@@ -111,6 +129,8 @@ def switch(argv):
 ### initialization ###
 
 if __name__ == "__main__":
+
+    interval = 1
     
     stop = False
     
@@ -125,4 +145,6 @@ if __name__ == "__main__":
         
     if stop:
         exit()
+        
+    startup()
     
