@@ -8,3 +8,10 @@ NODE_IP = '127.0.0.1'
 DB_USER = "database_user"
 DB_PASS = "database_pass"
 DB_NAME = "database_name"
+
+# coming soon
+TOKEN = "insert token here"
+DEV_TOKEN = "insert token here"
+
+# coming soon
+INTERVAL = 1
