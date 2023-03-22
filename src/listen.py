@@ -3,5 +3,5 @@ import socket
 
 import tkinter
 
-def start_gui():
-    print("started gui")
+def start():
+    print("listen")

@@ -2,10 +2,12 @@ from config import *
 import socket
 
 import sys
+
 import listen
 import node
+import server
 
-    ### mainflags ###
+### mainflags ###
 ra_node = False
 ra_server = False
 ra_listen = False
@@ -25,12 +27,47 @@ db_name = "PSMS"
 token = ""
 dev_token = ""
 
+### initialization message ###
+def init_msg():
+    global ra_listen
+    global ra_node
+    global ra_server
+    global node_port
+    global node_ip
+    global interval
+    global db_user
+    global db_pass
+    global db_name
+    global dev_token
+    
+    success = True
+    
+    print("[DEBUG] Initialization:")
+    
+    if ra_node == True:
+        print("[DEBUG] Starting NODE")
+    elif ra_server == True:
+        print("[DEBUG] Starting SERVER")
+    elif ra_listen == True:
+        print("[DEBUG] Starting LISTEN")
+        
+    print("[DEBUG] Node port: ", node_port)
+    print("[DEBUG] Node IP-Address: " + node_ip)
+    print("[DEBUG] Node Interval: ", interval)
+    print("[DEBUG] Database user: " + db_user)
+    print("[DEBUG] Database password: " + db_pass)
+    print("[DEBUG] Discord dev token: " + dev_token)
+    if len(str(dev_token)) < 72:
+        print("[ERROR] Developer token is to short")
+        print("[ERROR] Stopping the Startup!")
+        success = False
+        
+    return success
+
 ### start up sequence ###
 def startup():
-    if debug == True:
-        print('asd')
-        init_msg()
-    elif config == True:
+    success = True
+    if config == True:
         global node_port
         global node_ip
         global interval
@@ -48,11 +85,12 @@ def startup():
         db_name = DB_NAME
         token = TOKEN
         dev_token = DEV_TOKEN
+        print("[DEBUG] *** Using config.py for parameter ***")
+    if debug == True:
+        success = init_msg()
     
-    print("Starting pySerMoSo...")
-
-def init_msg():
-    print("insert init message here")
+    if success:
+        print("Starting pySerMoSo...")
 
 #### help message ###
 def help():
@@ -64,8 +102,11 @@ def split_argv(argv, index):
     sargv = argv.split(separator,1)[index]
     return sargv
 
-### switch arguments ### FIX NOT ACCESSABLE VALUES ### idk maybe put bool on other file?! ###
+### switch arguments
 def switch(argv):
+    global ra_server
+    global ra_node
+    global ra_listen
     global node_port
     global node_ip
     global interval
@@ -82,21 +123,23 @@ def switch(argv):
         return True # to stop the startup
     
     elif argv == "--node" or argv == "-n":
-        print("NODE")
-        if ra_server == False or ra_listen == False:
-            ra_node == True
+        if ra_server == False and ra_listen == False:
+            ra_node = True
         else:
-            print("[ERROR] You already parsed a working mode")
+            print("[ERROR] Only spezify one working mode")
+            return True
     elif argv == "--server" or argv == "-s":
-        if ra_node == False or ra_listen == False:
-            ra_server == True
+        if ra_node == False and ra_listen == False:
+            ra_server = True
         else:
-            print("[ERROR] You already parsed a working mode")
+            print("[ERROR] Only spezify one working mode")
+            return True
     elif argv == "--listen" or argv == "-l":
-        if ra_server == False or ra_node == False:
-            ra_listen == True
+        if ra_server == False and ra_node == False:
+            ra_listen = True
         else:
-            print("[ERROR] You already spezi a working mode")
+            print("[ERROR] Only spezify one working mode")
+            return True
         
     elif argv == "--debug" or argv == "-d":
         debug = True
@@ -124,6 +167,7 @@ def switch(argv):
         interval = int(split_argv(argv,1))
     else:
         print("[ERROR] unknown argument'" + argv + "'")
+        return True
 
 
 ### initialization ###
@@ -144,7 +188,14 @@ if __name__ == "__main__":
             help()
         
     if stop:
+        help()
         exit()
         
     startup()
     
+    if ra_node:
+        node.start()
+    elif ra_server:
+        server.start()
+    elif ra_listen:
+        listen.start()
