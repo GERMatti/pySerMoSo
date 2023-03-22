@@ -185,7 +185,6 @@ if __name__ == "__main__":
             break
         elif len(sys.argv) == 1:
             stop = True
-            help()
         
     if stop:
         help()
